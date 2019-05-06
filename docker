@@ -1,0 +1,17 @@
+version: "3"
+services:
+registry-srv:
+ container_name: "registry-srv"
+ image: registry:latest
+ port:
+  - 5000:5000
+registry-web:
+ container_name: "registry-web"
+ image: hyper/docker-registry-web
+environment:
+ -REGISTRY_URL=http://registry-srv:5000/v2
+ -REGISTRY_NAME=localhost:5000
+ports:
+ -8080:8080
+links:
+ registry-srv

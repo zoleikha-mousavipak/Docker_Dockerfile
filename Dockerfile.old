@@ -1,0 +1,56 @@
+ARG myversion=77799
+FROM scratch
+ADD centos-7-docker.tar.xz /
+LABEL name ="zoleikha"\
+	vendor="Mycento=${myversion}"\
+	license="MyLico"\
+	build-date="13990909"
+ 
+RUN yum install -y net-tools
+RUN yum install -y vim
+RUN yum install -y nginx
+RUN yum install -y httpd
+RUN yum install -y mariadb
+
+ENV MYSQL_ROOT_PASSWORD=123
+ENV nginx_script_dir /opt
+ENV nginx_dir /usr/share/nginx/html
+ENV apache_dir /var/www/html
+
+VOLUME ["/etc/nginx/","${nginx_dir}","/var/www/html","${apache_dir}"]
+
+EXPOSE :8080
+EXPOSE :80
+EXPOSE :3306
+
+RUN touch httpindex.html
+RUN cp httpindex.html /apche_dir/httpindex.html
+
+RUN touch httpd.conf
+RUN cp httpd.conf /etc/httpd/conf/httpd.conf
+
+RUN touch nginxindex.html
+RUN cp nginx.html /nginx_dir
+
+RUN touch nginx.conf
+RUN cp nginx.conf /etc/nginx
+
+RUN mkdir /var/log/servicelog 
+RUN workdir /usr/bin
+
+RUN echo Nginx_Not_Started > /var/log/servicelog/nginx.log
+RUN echo Apache_not_started > /var/log/servicelog/apache.log
+
+RUN useradd nginx_usr;\
+ chown -R /nginx_dir;\
+ chmod 777 /nginx_dir
+
+
+RUN useradd apache_usr;\
+ chown -R /apache_dir; \
+ chmod 777 /apache_dir
+
+ENTRYPOINT ping -c 1000 4.2.2.4
+CMD ["/bin/bash"]
+
+

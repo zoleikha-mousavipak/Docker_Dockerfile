@@ -1,0 +1,22 @@
+ARG myversion=77799
+FROM centos
+MAINTAINER "zoleikha" <zmpak2000@gmail.com>
+ENV container docker
+RUN yum -update;yum clean all
+RUN yum -install systemd;yum clean all;\
+	(cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [$i == systemd-tmpfile-setup.service] || rm -f $i;done;);\
+	rm -f /lib/systemd/system/multi-user.target.wants/*;\
+	rm -f /etc/systemd/system/*.wants/*;\
+	rm -f /lib/systemd/system/local-fs.target.wants/*;\
+	rm -f /lib/system/system/sockets.target.wants/*udev*;\
+	rm -f /lib/sytemd/system/sockets.target.wants/*initctl*;\
+	rm -f /lib/systemd/system/base.target.wants./*;\
+	rm -f /lib/systemd/system/anaconda.target.wants/*;
+
+RUN yum -y install httpd
+VOLUME ["/sys/fs/cgroup"]
+EXPOSE 8080:80
+CMD ["/usr/sbin/init"]
+
+
+
